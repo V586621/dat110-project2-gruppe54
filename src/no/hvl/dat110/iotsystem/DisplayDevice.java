@@ -22,11 +22,20 @@ public class DisplayDevice {
 		client.createTopic(Common.TEMPTOPIC);
 		client.subscribe(Common.TEMPTOPIC);
 		
-		for (int i = 0; i < COUNT; i ++) {
-			client.receive();
+		for (int i = 0; i < COUNT; i++) {
+
+			PublishMsg msg = (PublishMsg) client.receive();
+			System.out.println("Temperatur er: " + msg.getMessage());
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		client.unsubscribe("Temperature");
+
+		client.unsubscribe(Common.TEMPTOPIC);
 		client.disconnect();
 		
 		// - connect to the broker
