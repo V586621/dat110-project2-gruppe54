@@ -3,7 +3,6 @@ package no.hvl.dat110.broker;
 import java.util.Set;
 import java.util.Collection;
 
-
 import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.common.Stopable;
 import no.hvl.dat110.messages.*;
@@ -102,7 +101,6 @@ public class Dispatcher extends Stopable {
 			storage.bufferMessage.remove(user);
 		}
 
-
 	}
 
 	// called by dispatch upon receiving a disconnect message
@@ -166,18 +164,14 @@ public class Dispatcher extends Stopable {
 		// topic and message is contained in the subscribe message
 		// messages must be sent used the corresponding client session objects
 
-		Set<String> sub = storage.getSubscribers(msg.getTopic());
-		ClientSession session = null;
+		for (String user : storage.getSubscribers(msg.getTopic())) {
 
-		for (String user : sub) {
-			session = storage.getSession(user);
-			if (session != null) {
-				session.send(msg);
-			} else {
+			if (!storage.clients.containsKey(user)) { // the user is disconnected
 				storage.addBufferMessage(user, msg);
+			} else {
+				storage.getSession(user).send(msg);
 			}
 
 		}
-
 	}
 }
